@@ -3,6 +3,7 @@ package com.d9nich.exercise1;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Queue;
 
 public class BST<E extends Comparable<E>> implements Tree<E>, Serializable {
@@ -296,8 +297,8 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable {
 
     @Override
     /* Obtain an iterator. Use inorder. */
-    public java.util.Iterator<E> iterator() {
-        return new InorderIterator();
+    public java.util.ListIterator<E> iterator() {
+        return new InorderListIterator();
     }
 
     @Override
@@ -321,53 +322,94 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable {
         }
     }
 
-    // Inner class InorderIterator
-    private class InorderIterator implements java.util.Iterator<E> {
+    // Inner class InorderListIterator
+    private class InorderListIterator implements ListIterator<E> {
         // Store the elements in a list
-        private final java.util.ArrayList<E> list =
-                new java.util.ArrayList<>();
-        private int current = 0; // Point to the current element in list
+        private ListIterator<E> listIterator;
+        private E previousElement = null;
 
-        public InorderIterator() {
-            inorder(); // Traverse binary tree and store elements in list
+        public InorderListIterator() {
+            listIterator = inorder().listIterator();
         }
 
         /* Inorder traversal from the root  */
-        private void inorder() {
-            inorder(root);
+        private LinkedList<E> inorder() {
+            return inorder(root);
         }
 
         /**
          * Inorder traversal from a subtree
          */
-        private void inorder(TreeNode<E> root) {
-            if (root == null) return;
-            inorder(root.left);
+        private LinkedList<E> inorder(TreeNode<E> root) {
+            LinkedList<E> list = new LinkedList<>();
+            if (root == null) return list;
+            list.addAll(inorder(root.left));
             list.add(root.element);
-            inorder(root.right);
+            list.addAll(inorder(root.right));
+            return list;
         }
 
         @Override
-        /* More elements for traversing? */
         public boolean hasNext() {
-            return current < list.size();
+            return listIterator.hasNext();
         }
 
         @Override
-        /* Get the current element and move to the next */
         public E next() {
-            return list.get(current++);
+            previousElement = listIterator.next();
+            return previousElement;
         }
 
         @Override
-        /* Remove the current element */
+        public boolean hasPrevious() {
+            return listIterator.hasPrevious();
+        }
+
+        @Override
+        public E previous() {
+            previousElement = listIterator.previous();
+            return previousElement;
+        }
+
+        @Override
+        public int nextIndex() {
+            return listIterator.nextIndex();
+        }
+
+        @Override
+        public int previousIndex() {
+            return listIterator.previousIndex();
+        }
+
+        @Override
         public void remove() {
-            if (current == 0) // next() has not been called yet
+            if (listIterator.nextIndex() == 0) // next() has not been called yet
                 throw new IllegalStateException();
 
-            delete(list.get(--current));
-            list.clear(); // Clear the list
-            inorder(); // Rebuild the list
+            delete(previousElement);
+            listIterator.remove();
+        }
+
+        @Override
+        public void set(E e) {
+            if (listIterator.nextIndex() == 0) // next() has not been called yet
+                throw new IllegalStateException();
+
+            delete(previousElement);
+            insert(e);
+            int pos = nextIndex();
+            listIterator = inorder().listIterator(pos);
+        }
+
+        @Override
+        public void add(E e) {
+            if (listIterator.nextIndex() == 0) // next() has not been called yet
+                throw new IllegalStateException();
+
+            insert(e);
+            int pos = nextIndex();
+            inorder();
+            listIterator = inorder().listIterator(pos);
         }
     }
 }
