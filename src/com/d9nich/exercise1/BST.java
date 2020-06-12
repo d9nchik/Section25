@@ -176,6 +176,13 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable {
     }
 
     /**
+     * Return the number of nonleaf nodes
+     */
+    public int getNumberofNonLeaves() {
+        return size - getNumberOfLeaves();
+    }
+
+    /**
      * Return the number of leaf nodes in subtree
      */
     protected int getNumberOfLeaves(TreeNode<E> root) {

@@ -10,6 +10,7 @@ public class Test {
         System.out.println(tree.height());
         System.out.println("That`s tree is perfect?: " + tree.isPerfectBST());
         System.out.println("Number of leaves: " + tree.getNumberOfLeaves());
+        System.out.println("Number of non leaves: " + tree.getNumberofNonLeaves());
 
         tree.clear();
         tree.addAll(Arrays.asList(2, 1, 3));
@@ -17,5 +18,6 @@ public class Test {
         System.out.println();
         System.out.println("That`s tree is perfect?: " + tree.isPerfectBST());
         System.out.println("Number of leaves: " + tree.getNumberOfLeaves());
+        System.out.println("Number of non leaves: " + tree.getNumberofNonLeaves());
     }
 }
