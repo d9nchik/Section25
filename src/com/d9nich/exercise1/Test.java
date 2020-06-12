@@ -8,12 +8,14 @@ public class Test {
         tree.breadthFirstTraversal();
         System.out.println();
         System.out.println(tree.height());
-        System.out.println("That`s tree is perfect?: "+tree.isPerfectBST());
+        System.out.println("That`s tree is perfect?: " + tree.isPerfectBST());
+        System.out.println("Number of leaves: " + tree.getNumberOfLeaves());
 
         tree.clear();
         tree.addAll(Arrays.asList(2, 1, 3));
         tree.preorder();
         System.out.println();
-        System.out.println("That`s tree is perfect?: "+tree.isPerfectBST());
+        System.out.println("That`s tree is perfect?: " + tree.isPerfectBST());
+        System.out.println("Number of leaves: " + tree.getNumberOfLeaves());
     }
 }

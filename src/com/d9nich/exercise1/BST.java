@@ -169,6 +169,24 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable {
     }
 
     /**
+     * Return the number of leaf nodes
+     */
+    public int getNumberOfLeaves() {
+        return getNumberOfLeaves(root);
+    }
+
+    /**
+     * Return the number of leaf nodes in subtree
+     */
+    protected int getNumberOfLeaves(TreeNode<E> root) {
+        if (root == null)
+            return 0;
+        if (root.right == null && root.left == null)
+            return 1;
+        return getNumberOfLeaves(root.right) + getNumberOfLeaves(root.left);
+    }
+
+    /**
      * Return the height of this binary subtree
      */
     protected int height(TreeNode<E> root) {
