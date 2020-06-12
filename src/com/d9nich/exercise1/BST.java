@@ -178,6 +178,13 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable {
     }
 
     /**
+     * Returns true if the tree is a perfect binary tree
+     */
+    public boolean isPerfectBST() {
+        return size + 1 == 1 << height();
+    }
+
+    /**
      * Returns the root of the tree
      */
     public TreeNode<E> getRoot() {
