@@ -326,21 +326,21 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
     @Override
     /* Obtain an iterator. Use inorder. */
     public java.util.ListIterator<E> iterator() {
-        return new InorderListIterator(() -> inorderList(root));
+        return new InorderListIterator(this::inorderList);
     }
 
     /**
      * Return an iterator for traversing the elements in preorder
      */
     public java.util.ListIterator<E> preorderIterator() {
-        return new InorderListIterator(() -> preorderList(root));
+        return new InorderListIterator(this::preorderList);
     }
 
     /**
      * Returns an iterator for traversing the elements in postOrder
      */
     java.util.Iterator<E> postOrderIterator() {
-        return new InorderListIterator(() -> postOrderList(root));
+        return new InorderListIterator(this::postOrderList);
     }
 
     @Override
@@ -399,7 +399,19 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
         }
     }
 
-    private LinkedList<E> inorderList(TreeNode<E> root) {
+    public LinkedList<E> inorderList() {
+        return inorderList(root);
+    }
+
+    public LinkedList<E> preorderList() {
+        return preorderList(root);
+    }
+
+    public LinkedList<E> postOrderList() {
+        return postOrderList(root);
+    }
+
+    protected LinkedList<E> inorderList(TreeNode<E> root) {
         LinkedList<E> list = new LinkedList<>();
         if (root == null) return list;
         list.addAll(inorderList(root.left));
@@ -408,7 +420,7 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
         return list;
     }
 
-    private LinkedList<E> preorderList(TreeNode<E> root) {
+    protected LinkedList<E> preorderList(TreeNode<E> root) {
         LinkedList<E> list = new LinkedList<>();
         if (root == null) return list;
         list.add(root.element);
@@ -417,7 +429,7 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
         return list;
     }
 
-    private LinkedList<E> postOrderList(TreeNode<E> root) {
+    protected LinkedList<E> postOrderList(TreeNode<E> root) {
         LinkedList<E> list = new LinkedList<>();
         if (root == null) return list;
         list.addAll(postOrderList(root.left));
