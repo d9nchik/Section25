@@ -1,4 +1,4 @@
-package com.d9nich.exercise1;
+package com.d9nich.btree;
 
 import java.util.Collection;
 

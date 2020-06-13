@@ -1,4 +1,4 @@
-package com.d9nich.exercise1;
+package com.d9nich.btree;
 
 import java.util.Iterator;
 
@@ -9,7 +9,7 @@ public class Test {
         Iterator<Integer> iterator = tree.iterator();
         while (iterator.hasNext())
             System.out.print(iterator.next() + " ");
-        iterator = tree.preorderIterator();
+        iterator = tree.postOrderIterator();
         System.out.println();
         while (iterator.hasNext())
             System.out.print(iterator.next() + " ");

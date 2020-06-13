@@ -1,4 +1,4 @@
-package com.d9nich.exercise1;
+package com.d9nich.btree;
 
 import java.io.Serializable;
 import java.util.*;
@@ -336,6 +336,13 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
         return new InorderListIterator(() -> preorderList(root));
     }
 
+    /**
+     * Returns an iterator for traversing the elements in postOrder
+     */
+    java.util.Iterator<E> postOrderIterator() {
+        return new InorderListIterator(() -> postOrderList(root));
+    }
+
     @Override
     /* Remove all elements from the tree */
     public void clear() {
@@ -407,6 +414,15 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
         list.add(root.element);
         list.addAll(preorderList(root.left));
         list.addAll(preorderList(root.right));
+        return list;
+    }
+
+    private LinkedList<E> postOrderList(TreeNode<E> root) {
+        LinkedList<E> list = new LinkedList<>();
+        if (root == null) return list;
+        list.addAll(postOrderList(root.left));
+        list.addAll(postOrderList(root.right));
+        list.add(root.element);
         return list;
     }
 
