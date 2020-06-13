@@ -1,12 +1,9 @@
 package com.d9nich.exercise1;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.Queue;
+import java.util.*;
 
-public class BST<E extends Comparable<E>> implements Tree<E>, Serializable {
+public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Cloneable {
     protected TreeNode<E> root;
     protected int size = 0;
 
@@ -179,7 +176,7 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable {
     /**
      * Return the number of nonleaf nodes
      */
-    public int getNumberofNonLeaves() {
+    public int getNumberOfNonLeaves() {
         return size - getNumberOfLeaves();
     }
 
@@ -295,6 +292,37 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable {
         return true; // Element deleted successfully
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object clone() {
+        try {
+            BST<E> bst = (BST<E>) super.clone();
+            if (bst.root != null)
+                bst.root = (TreeNode<E>) bst.root.clone();
+            return bst;
+        } catch (CloneNotSupportedException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BST<?> bst = (BST<?>) o;
+
+        if (size != bst.size) return false;
+        return Objects.equals(root, bst.root);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = root != null ? root.hashCode() : 0;
+        result = 31 * result + size;
+        return result;
+    }
+
     @Override
     /* Obtain an iterator. Use inorder. */
     public java.util.ListIterator<E> iterator() {
@@ -312,13 +340,48 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable {
      * This inner class is static, because it does not access
      * any instance members defined in its outer class
      */
-    public static class TreeNode<E> implements Serializable {
+    public static class TreeNode<E> implements Serializable, Cloneable {
         protected E element;
         protected TreeNode<E> left;
         protected TreeNode<E> right;
 
         public TreeNode(E e) {
             element = e;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Object clone() {
+            try {
+                TreeNode<E> treeNode = (TreeNode<E>) super.clone();
+                if (treeNode.left != null)
+                    treeNode.left = (TreeNode<E>) treeNode.left.clone();
+                if (treeNode.right != null)
+                    treeNode.right = (TreeNode<E>) treeNode.right.clone();
+                return treeNode;
+            } catch (CloneNotSupportedException ex) {
+                return null;
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TreeNode<?> treeNode = (TreeNode<?>) o;
+
+            if (!element.equals(treeNode.element)) return false;
+            if (!Objects.equals(left, treeNode.left)) return false;
+            return Objects.equals(right, treeNode.right);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = element.hashCode();
+            result = 31 * result + (left != null ? left.hashCode() : 0);
+            result = 31 * result + (right != null ? right.hashCode() : 0);
+            return result;
         }
     }
 
