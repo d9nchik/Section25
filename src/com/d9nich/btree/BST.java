@@ -3,22 +3,32 @@ package com.d9nich.btree;
 import java.io.Serializable;
 import java.util.*;
 
-public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Cloneable {
+public class BST<E> implements Tree<E>, Serializable, Cloneable {
+    protected Comparator<? super E> comparator;
     protected TreeNode<E> root;
     protected int size = 0;
 
     /**
      * Create an empty binary tree
+     * Compare elements using their natural order
      */
+    @SuppressWarnings("unchecked")
     public BST() {
+        comparator = (e1, e2) -> ((Comparable<E>) e1).compareTo(e2);
+    }
+
+    public BST(Comparator<? super E> comparator) {
+        this.comparator = comparator;
     }
 
     /**
      * Create a binary tree from an array of objects
      */
     public BST(E[] objects) {
+        this();
         this.addAll(Arrays.asList(objects));
     }
+
 
     @Override
     /* Returns true if the element is in the tree */
@@ -26,9 +36,9 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
         TreeNode<E> current = root; // Start from the root
 
         while (current != null) {
-            if (e.compareTo(current.element) < 0) {
+            if (comparator.compare(e, current.element) < 0) {
                 current = current.left;
-            } else if (e.compareTo(current.element) > 0) {
+            } else if (comparator.compare(e, current.element) > 0) {
                 current = current.right;
             } else // element matches current.element
                 return true; // Element is found
@@ -41,9 +51,9 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
         TreeNode<E> current = root; // Start from the root
 
         while (current != null) {
-            if (e.compareTo(current.element) < 0) {
+            if (comparator.compare(e, current.element) < 0) {
                 current = current.left;
-            } else if (e.compareTo(current.element) > 0) {
+            } else if (comparator.compare(e, current.element) > 0) {
                 current = current.right;
             } else // element matches current.element
                 return current.element; // Element is found
@@ -63,17 +73,17 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
             TreeNode<E> parent = null;
             TreeNode<E> current = root;
             while (current != null)
-                if (e.compareTo(current.element) < 0) {
+                if (comparator.compare(e, current.element) < 0) {
                     parent = current;
                     current = current.left;
-                } else if (e.compareTo(current.element) > 0) {
+                } else if (comparator.compare(e, current.element) > 0) {
                     parent = current;
                     current = current.right;
                 } else
                     return false; // Duplicate node not inserted
 
             // Create the new node and attach it to the parent node
-            if (e.compareTo(parent.element) < 0)
+            if (comparator.compare(e, parent.element) < 0)
                 parent.left = createNewNode(e);
             else
                 parent.right = createNewNode(e);
@@ -222,9 +232,9 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
 
         while (current != null) {
             list.add(current); // Add the node to the list
-            if (e.compareTo(current.element) < 0) {
+            if (comparator.compare(e, current.element) < 0) {
                 current = current.left;
-            } else if (e.compareTo(current.element) > 0) {
+            } else if (comparator.compare(e, current.element) > 0) {
                 current = current.right;
             } else
                 break;
@@ -242,10 +252,10 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
         TreeNode<E> parent = null;
         TreeNode<E> current = root;
         while (current != null) {
-            if (e.compareTo(current.element) < 0) {
+            if (comparator.compare(e, current.element) < 0) {
                 parent = current;
                 current = current.left;
-            } else if (e.compareTo(current.element) > 0) {
+            } else if (comparator.compare(e, current.element) > 0) {
                 parent = current;
                 current = current.right;
             } else
@@ -260,7 +270,7 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
             if (parent == null) {
                 root = current.right;
             } else {
-                if (e.compareTo(parent.element) < 0)
+                if (comparator.compare(e, parent.element) < 0)
                     parent.left = current.right;
                 else
                     parent.right = current.right;
