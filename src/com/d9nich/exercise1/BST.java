@@ -326,7 +326,14 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
     @Override
     /* Obtain an iterator. Use inorder. */
     public java.util.ListIterator<E> iterator() {
-        return new InorderListIterator();
+        return new InorderListIterator(() -> inorderList(root));
+    }
+
+    /**
+     * Return an iterator for traversing the elements in preorder
+     */
+    public java.util.ListIterator<E> preorderIterator() {
+        return new InorderListIterator(() -> preorderList(root));
     }
 
     @Override
@@ -385,31 +392,41 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
         }
     }
 
+    private LinkedList<E> inorderList(TreeNode<E> root) {
+        LinkedList<E> list = new LinkedList<>();
+        if (root == null) return list;
+        list.addAll(inorderList(root.left));
+        list.add(root.element);
+        list.addAll(inorderList(root.right));
+        return list;
+    }
+
+    private LinkedList<E> preorderList(TreeNode<E> root) {
+        LinkedList<E> list = new LinkedList<>();
+        if (root == null) return list;
+        list.add(root.element);
+        list.addAll(preorderList(root.left));
+        list.addAll(preorderList(root.right));
+        return list;
+    }
+
+    @SuppressWarnings("RawUseOfParameterized")
+    @FunctionalInterface
+    interface Order {
+        LinkedList getList();
+    }
+
     // Inner class InorderListIterator
+    @SuppressWarnings("unchecked")
     private class InorderListIterator implements ListIterator<E> {
         // Store the elements in a list
+        private final Order order;
         private ListIterator<E> listIterator;
         private E previousElement = null;
 
-        public InorderListIterator() {
-            listIterator = inorder().listIterator();
-        }
-
-        /* Inorder traversal from the root  */
-        private LinkedList<E> inorder() {
-            return inorder(root);
-        }
-
-        /**
-         * Inorder traversal from a subtree
-         */
-        private LinkedList<E> inorder(TreeNode<E> root) {
-            LinkedList<E> list = new LinkedList<>();
-            if (root == null) return list;
-            list.addAll(inorder(root.left));
-            list.add(root.element);
-            list.addAll(inorder(root.right));
-            return list;
+        public InorderListIterator(Order order) {
+            this.order = order;
+            listIterator = order.getList().listIterator();
         }
 
         @Override
@@ -461,7 +478,7 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
             delete(previousElement);
             insert(e);
             int pos = nextIndex();
-            listIterator = inorder().listIterator(pos);
+            listIterator = order.getList().listIterator(pos);
         }
 
         @Override
@@ -471,8 +488,7 @@ public class BST<E extends Comparable<E>> implements Tree<E>, Serializable, Clon
 
             insert(e);
             int pos = nextIndex();
-            inorder();
-            listIterator = inorder().listIterator(pos);
+            listIterator = order.getList().listIterator(pos);
         }
     }
 }
