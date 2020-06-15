@@ -48,18 +48,8 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
     }
 
     public E searchAndReturn(E e) {
-        TreeNode<E> current = root; // Start from the root
-
-        while (current != null) {
-            if (comparator.compare(e, current.element) < 0) {
-                current = current.left;
-            } else if (comparator.compare(e, current.element) > 0) {
-                current = current.right;
-            } else // element matches current.element
-                return current.element; // Element is found
-        }
-
-        return null;
+        TreeNode<E> node = getNode(e);
+        return node != null ? node.element : null;
     }
 
     @Override
@@ -83,10 +73,13 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
                     return false; // Duplicate node not inserted
 
             // Create the new node and attach it to the parent node
-            if (comparator.compare(e, parent.element) < 0)
+            if (comparator.compare(e, parent.element) < 0) {
                 parent.left = createNewNode(e);
-            else
+                parent.left.parent = parent;
+            } else {
                 parent.right = createNewNode(e);
+                parent.right.parent = parent;
+            }
         }
 
         size++;
@@ -269,11 +262,13 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
             // Connect the parent with the right child of the current node
             if (parent == null) {
                 root = current.right;
+                root.parent = null;
             } else {
                 if (comparator.compare(e, parent.element) < 0)
                     parent.left = current.right;
                 else
                     parent.right = current.right;
+                current.right.parent = parent;
             }
         } else {
             // Case 2: The current node has a left child
@@ -293,13 +288,57 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
             // Eliminate rightmost node
             if (parentOfRightMost.right == rightMost)
                 parentOfRightMost.right = rightMost.left;
-            else
+            else {
                 // Special case: parentOfRightMost == current
                 parentOfRightMost.left = rightMost.left;
+                if (rightMost.left != null)
+                    rightMost.left.parent = parentOfRightMost;
+            }
         }
 
         size--;
         return true; // Element deleted successfully
+    }
+
+    /**
+     * Return the node for the specified element.
+     * Return null if the element is not in the tree.
+     */
+    private TreeNode<E> getNode(E element) {
+        TreeNode<E> current = root; // Start from the root
+
+        while (current != null) {
+            if (comparator.compare(element, current.element) < 0) {
+                current = current.left;
+            } else if (comparator.compare(element, current.element) > 0) {
+                current = current.right;
+            } else // element matches current.element
+                return current; // Element is found
+        }
+
+        return null;
+    }
+
+    /**
+     * Return true if the node for the element is a leaf
+     */
+    protected boolean isLeaf(E element) {
+        TreeNode<E> node = getNode(element);
+        return node != null && node.left == null && node.right == null;
+    }
+
+    /**
+     * Return the path of elements from the specified element
+     * to the root in an array list.
+     */
+    public ArrayList<E> getPath(E e) {
+        ArrayList<E> path = new ArrayList<>();
+        TreeNode<E> node = getNode(e);
+        while (node != null) {
+            path.add(node.element);
+            node = node.parent;
+        }
+        return path;
     }
 
     @SuppressWarnings("unchecked")
@@ -349,7 +388,7 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
     /**
      * Returns an iterator for traversing the elements in postOrder
      */
-    java.util.Iterator<E> postOrderIterator() {
+    public java.util.Iterator<E> postOrderIterator() {
         return new InorderListIterator(this::postOrderList);
     }
 
@@ -366,6 +405,7 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
      */
     public static class TreeNode<E> implements Serializable, Cloneable {
         protected E element;
+        protected TreeNode<E> parent;
         protected TreeNode<E> left;
         protected TreeNode<E> right;
 
@@ -378,10 +418,14 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
         public Object clone() {
             try {
                 TreeNode<E> treeNode = (TreeNode<E>) super.clone();
-                if (treeNode.left != null)
+                if (treeNode.left != null) {
                     treeNode.left = (TreeNode<E>) treeNode.left.clone();
-                if (treeNode.right != null)
+                    treeNode.left.parent = treeNode;
+                }
+                if (treeNode.right != null) {
                     treeNode.right = (TreeNode<E>) treeNode.right.clone();
+                    treeNode.right.parent = treeNode;
+                }
                 return treeNode;
             } catch (CloneNotSupportedException ex) {
                 return null;
@@ -396,6 +440,7 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
             TreeNode<?> treeNode = (TreeNode<?>) o;
 
             if (!element.equals(treeNode.element)) return false;
+            if (!Objects.equals(parent, treeNode.parent)) return false;
             if (!Objects.equals(left, treeNode.left)) return false;
             return Objects.equals(right, treeNode.right);
         }
@@ -403,6 +448,7 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
         @Override
         public int hashCode() {
             int result = element.hashCode();
+            result = 31 * result + (parent != null ? parent.hashCode() : 0);
             result = 31 * result + (left != null ? left.hashCode() : 0);
             result = 31 * result + (right != null ? right.hashCode() : 0);
             return result;
