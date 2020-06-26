@@ -149,6 +149,14 @@ class BSTTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
+    void testHashCode(){
+        BST<Integer> bst = (BST<Integer>) medium.clone();
+        assertEquals(bst.hashCode(), medium.hashCode());
+        assertNotEquals(bst.hashCode(), high.hashCode());
+    }
+
+    @Test
     void iterator() {
         int k = 1;
         for (int j : medium)

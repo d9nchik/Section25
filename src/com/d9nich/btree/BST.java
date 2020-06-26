@@ -447,7 +447,6 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
         @Override
         public int hashCode() {
             int result = element.hashCode();
-            result = 31 * result + (parent != null ? parent.hashCode() : 0);
             result = 31 * result + (left != null ? left.hashCode() : 0);
             result = 31 * result + (right != null ? right.hashCode() : 0);
             return result;
