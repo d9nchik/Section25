@@ -440,7 +440,6 @@ public class BST<E> implements Tree<E>, Serializable, Cloneable {
             TreeNode<?> treeNode = (TreeNode<?>) o;
 
             if (!element.equals(treeNode.element)) return false;
-            if (!Objects.equals(parent, treeNode.parent)) return false;
             if (!Objects.equals(left, treeNode.left)) return false;
             return Objects.equals(right, treeNode.right);
         }
